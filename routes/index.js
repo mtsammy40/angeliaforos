@@ -27,7 +27,7 @@ router.get('/sendMail', function(req, res, next) {
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
       console.log(error);
-      res.send('There was an error. Please check data');
+      res.send('There was an error. Please check data'+error);
     } else {
       console.log('Email sent: ' + info.response);
       res.send('Email sent');
