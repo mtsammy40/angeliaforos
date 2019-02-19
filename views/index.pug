@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  form(action="/sendMail", method="get")
+    .test
+      label(for='name') Email:
+      input#name.form-control(type='email', placeholder='Email Here' name='email')
+    .test
+      input#submit(type='submit', value='Send Email')
