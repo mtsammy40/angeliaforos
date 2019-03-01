@@ -7,6 +7,10 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.post('/newAdmin', function(req, res, next){
+  console.log('imefika', req.body);
+  res.send(req.body);
+});
 router.get('/sendMail', function(req, res, next) {
   var emailto = req.param('email');
   var transporter = nodemailer.createTransport({

@@ -9,3 +9,9 @@ block content
       input#name.form-control(type='email', placeholder='Email Here' name='email')
     .test
       input#submit(type='submit', value='Send Email')
+  form(action="/newAdmin" method="post")
+    .test
+      label(for='data') Data:
+      input#data(type="text", name="random")
+    .test
+      input(type="submit", value="Send")
