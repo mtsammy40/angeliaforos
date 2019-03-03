@@ -1,15 +1,22 @@
 var express = require('express');
 var router = express.Router();
 var nodemailer = require('nodemailer');
+var mailTo = require('../components/mailer');
 
+router.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
 router.post('/newAdmin', function(req, res, next){
-  console.log('imefika', req.body);
-  res.send(req.body);
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  mailTo(req.body.email, 'Your Bitpoll Secret Identity', 'Please Keep this Private');
 });
 router.get('/sendMail', function(req, res, next) {
   var emailto = req.param('email');
@@ -23,7 +30,7 @@ router.get('/sendMail', function(req, res, next) {
   
   var mailOptions = {
     from: 'mtsammy40@gmail.com',
-    to: 'mtsammy40@hotmail.com',
+    to: emailto,
     subject: 'Sending Email using Node.js',
     text: 'That was easy!'
   };
