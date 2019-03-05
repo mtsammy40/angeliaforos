@@ -2,6 +2,11 @@ var express = require('express');
 var router = express.Router();
 var nodemailer = require('nodemailer');
 var mailTo = require('../components/mailer');
+var Voter = require('../db/voterModel');
+var fs = require('fs');
+var path = require('path');
+var multer = require('multer');
+var upload = multer({ dest: 'uploads/' })
 
 router.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -12,11 +17,49 @@ router.use(function(req, res, next) {
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
+router.get('/data', function(req, res, next) {
+  Voter.find({}, (err, voter)=>{
+    res.send(voter);
+  });
+});
+router.get('/images', function(req, res, next) {
+  Voter.find({}, (err, voter)=>{
+    var user = voter[5];
+    res.contentType(user.dp.contentType);
+    res.send(user.dp.img.data);
+  })
+});
+router.post('/newAdmin', upload.single('dp'), function(req, res, next){
+  const tempPath = req.file.path;
+  var id = req.body.id;
+  var ext = path.extname(req.file.originalname).toLowerCase();
+  const targetPath = path.join(__dirname, "../uploads/"+id+ext);
+  var name = req.body.name;
+  if(ext === ".png" || ext === ".jpg"){
+    fs.rename(tempPath, targetPath, err => {
+      if (err) throw err;
+      var newVoter = new Voter();
+      newVoter.name = name;
+      newVoter.id = id;
+      newVoter.dp = targetPath;
+      newVoter.save(err=>{
+        if(err) throw err;
+        Voter.find({id : id}, (err, doc)=>{
+          if(err) throw err;
+          res.send(doc);
+        })
+      })
+    });
+  } else {
+    fs.unlink(tempPath, err => {
+      if (err) return handleError(err, res);
 
-router.post('/newAdmin', function(req, res, next){
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  mailTo(req.body.email, 'Your Bitpoll Secret Identity', 'Please Keep this Private');
+      res
+        .status(403)
+        .contentType("text/plain")
+        .end("Only .png files are allowed!");
+  });
+}
 });
 router.get('/sendMail', function(req, res, next) {
   var emailto = req.param('email');
@@ -45,5 +88,4 @@ router.get('/sendMail', function(req, res, next) {
     }
   });
 });
-
 module.exports = router;

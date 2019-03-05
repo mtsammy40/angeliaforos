@@ -9,9 +9,20 @@ block content
       input#name.form-control(type='email', placeholder='Email Here' name='email')
     .test
       input#submit(type='submit', value='Send Email')
-  form(action="/newAdmin" method="post")
+  .NewForm
+  form(action="/newAdmin" method="POST" enctype="multipart/form-data")
+    .test
+      label(for='data') name:
+      input#data(type="text", name="name")
+    .test
+      label(for='data') Id:
+      input#data(type="text", name="id")
     .test
       label(for='data') Data:
-      input#data(type="text", name="random")
+      input#data(type="file", name="dp")
     .test
       input(type="submit", value="Send")
+    .test
+      a(href="http://localhost:3000/data") View all
+    .test
+      a(href="http://localhost:3000/images") View Image
