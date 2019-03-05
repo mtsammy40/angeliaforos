@@ -22,7 +22,12 @@ block content
       input#data(type="file", name="dp")
     .test
       input(type="submit", value="Send")
-    .test
-      a(href="http://localhost:3000/data") View all
-    .test
-      a(href="http://localhost:3000/images") View Image
+  .test
+    a(href="http://localhost:3000/data") View all
+  .test
+    a(href="http://localhost:3000/images") View Image
+  .test
+    form(action="/getdp", method="post")
+      label(for="id") Id
+      input#id(type="text", name="id")
+      input#sub(type="submit" value="Get Dp")

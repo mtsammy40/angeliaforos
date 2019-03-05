@@ -22,13 +22,14 @@ router.get('/data', function(req, res, next) {
     res.send(voter);
   });
 });
-router.get('/images', function(req, res, next) {
-  Voter.find({}, (err, voter)=>{
-    var user = voter[5];
-    res.contentType(user.dp.contentType);
-    res.send(user.dp.img.data);
+router.post('/getdp', (req, res, next)=>{
+  var id = req.body.id;
+  Voter.findOne({ id : id}, (err, doc)=>{
+    if(err) throw err;
+    res.sendFile(doc.dp);
+    console.log('my dp', doc.dp);
   })
-});
+})
 router.post('/newAdmin', upload.single('dp'), function(req, res, next){
   const tempPath = req.file.path;
   var id = req.body.id;
