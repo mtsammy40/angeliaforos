@@ -3,6 +3,7 @@ var router = express.Router();
 var nodemailer = require('nodemailer');
 var mailTo = require('../components/mailer');
 var Voter = require('../db/voterModel');
+var Admin = require('../db/pendingAdmin');
 var fs = require('fs');
 var path = require('path');
 var multer = require('multer');
@@ -22,6 +23,65 @@ router.get('/data', function(req, res, next) {
     res.send(voter);
   });
 });
+
+router.post('/NewPendingAdmin', function(req, res, next){
+  var newAdmin = new Admin();
+  newAdmin.name =  req.body.name;
+  newAdmin.id = req.body.id;
+  newAdmin.dob = req.body.dob;
+  newAdmin.county = req.body.county;
+  newAdmin.phoneNo = req.body.phoneNo;
+  newAdmin.dp = req.body.gender;
+  newAdmin.gender = req.body.gender;
+  newAdmin.email = req.body.email;
+  newAdmin.nationality = req.body.nationality;
+  newAdmin.institution = req.body.institution;
+  console.log('newAdmin', newAdmin);
+  newAdmin.save(err=>{
+    if (err){
+      console.log('error 200', err);
+    }
+    res.send('We are sending');
+  });
+});
+router.get('/pendingAdmin', (req, res)=>{
+  Admin.findOne({ id: req.param('id')}, (err, doc)=>{
+    if(err){
+      res.status(500);
+      throw err;
+    } 
+    res.status('200').send(doc);
+  });
+});
+router.post('/approveAdmin', (req, res)=>{
+  Admin.findOneAndUpdate({ id: req.id }, { approved: true}, (err)=>{
+    if(err) throw err;
+    axios
+    res.status(200).send('Admin Approved');
+  })
+});
+router.post('/sendIdentity', upload.single('dp'), (res, req)=>{
+  const tempPath = req.file.path;
+  var name = req.body.name;
+  var email = req.body.email;
+  var subject = "You have been approved as an Institution ADMIN";
+  var text = "Find attached your identity. Download it and upload it when promted! Keep it secret!!!";
+  attachments=[
+    {   // file on disk as an attachment
+      filename: name,
+      path: tempPath // stream this file
+  },
+  ];
+  var email = mailTo(email, subject, text, attachments);
+  res.send(email);
+})
+router.get('/AllPendingAdmins/', (req, res)=>{
+  Admin.find({ approved: false }, (err, doc)=>{
+    if(err) throw err;
+    res.status(200).send(doc);
+  });
+});
+
 router.post('/getdp', (req, res, next)=>{
   var id = req.body.id;
   Voter.findOne({ id : id}, (err, doc)=>{

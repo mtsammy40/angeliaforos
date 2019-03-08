@@ -1,6 +1,6 @@
 var nodemailer = require('nodemailer');
 
-function mailTo(receipient, subject, text){
+function mailTo(receipient, subject, text, attachments){
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -12,15 +12,16 @@ function mailTo(receipient, subject, text){
         from: 'mtsammy40@gmail.com',
         to: receipient,
         subject: subject,
-        text: text
+        text: text,
+        attachments: attachments
       };
       transporter.sendMail(mailOptions, function(error, info){
         if (error) {
           console.log(error);
-          res.send('There was an error. Please check data '+error);
+          return 'There was an error. Please check data '+error;
         } else {
           console.log('Email sent: ' + info.response);
-          res.send('Email sent' + info.response);
+          return info.response;
         }
       });
 }
