@@ -31,3 +31,18 @@ block content
       label(for="id") Id
       input#id(type="text", name="id")
       input#sub(type="submit" value="Get Dp")
+  .test
+    h2 Approve Admin
+    form(action="/approveAdmin", method="post")
+      label(for="id") Id
+      input#id(type="text", name="id")
+      input#sub(type="submit" value="Approve")
+  .test
+    h2 send mail
+    form(action="/sendIdentity", method="post")
+      label(for="id") Id
+      input#id(type="text", name="id")
+      input#id(type="text", name="name" placeholder="name")
+      input#email(type="email", name="email" placeholder="email")
+      input#data(type="text", name="data")
+      input#sub(type="submit" value="Approve")

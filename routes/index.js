@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var nodemailer = require('nodemailer');
-var mailTo = require('../components/mailer');
+var mail = require('../components/mailer');
 var Voter = require('../db/voterModel');
 var Admin = require('../db/pendingAdmin');
 var fs = require('fs');
@@ -36,6 +36,7 @@ router.post('/NewPendingAdmin', function(req, res, next){
   newAdmin.email = req.body.email;
   newAdmin.nationality = req.body.nationality;
   newAdmin.institution = req.body.institution;
+  newAdmin.approved = false;
   console.log('newAdmin', newAdmin);
   newAdmin.save(err=>{
     if (err){
@@ -44,7 +45,7 @@ router.post('/NewPendingAdmin', function(req, res, next){
     res.send('We are sending');
   });
 });
-router.get('/pendingAdmin', (req, res)=>{
+router.get('/pendingAdmin', (req, res, next)=>{
   Admin.findOne({ id: req.param('id')}, (err, doc)=>{
     if(err){
       res.status(500);
@@ -54,27 +55,38 @@ router.get('/pendingAdmin', (req, res)=>{
   });
 });
 router.post('/approveAdmin', (req, res)=>{
-  Admin.findOneAndUpdate({ id: req.id }, { approved: true}, (err)=>{
-    if(err) throw err;
-    axios
-    res.status(200).send('Admin Approved');
-  })
+  var aid = req.body.id;
+  Admin.findOneAndUpdate({ id : aid}, {$set:{ approved: true }}, { new: true }, (err, doc)=>{
+    if(err){
+      res.status(500).send(err);
+      throw err;
+    } else {
+      res.status(200).send(doc);
+      console.log('doc is :', doc);
+    }
+  });
 });
-router.post('/sendIdentity', upload.single('dp'), (res, req)=>{
-  const tempPath = req.file.path;
+router.post('/sendIdentity', upload.single('data'), (req, res)=>{
+  var tempPath = req.file.path;
+  console.log('path file', tempPath);
   var name = req.body.name;
-  var email = req.body.email;
+  var dest = req.body.email;
+  console.log('dest', req.body);
   var subject = "You have been approved as an Institution ADMIN";
   var text = "Find attached your identity. Download it and upload it when promted! Keep it secret!!!";
-  attachments=[
-    {   // file on disk as an attachment
-      filename: name,
-      path: tempPath // stream this file
-  },
+  var attachments= [
+    {   // utf-8 string as an attachment
+      filename: name+'.card',
+      path: tempPath
+    },
   ];
-  var email = mailTo(email, subject, text, attachments);
-  res.send(email);
-})
+  var mailed = mail.mailTo(dest, subject, text, attachments);
+  if (mailed){
+    res.status(200).send('mail sent to ' + email);
+  } else {
+    res.status(500).send('Failed to send email to : ' + dest);
+  }
+});
 router.get('/AllPendingAdmins/', (req, res)=>{
   Admin.find({ approved: false }, (err, doc)=>{
     if(err) throw err;

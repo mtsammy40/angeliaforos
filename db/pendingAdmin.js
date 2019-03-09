@@ -12,7 +12,7 @@ var AdminSchema = new Schema({
     phoneNo: {type: String, required: true},
     dp: {type: String, required: true},
     institution: {type: String, required: true},
-    approved: {type: Boolean, default: false}
+    approved: {type: Boolean,  required: true}
   });
 
 var Admin = mongoose.model('Admin', AdminSchema);

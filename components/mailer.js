@@ -1,6 +1,7 @@
 var nodemailer = require('nodemailer');
 
-function mailTo(receipient, subject, text, attachments){
+module.exports = {
+  mailTo : function (recipient, subject, text, attachments){
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -9,8 +10,8 @@ function mailTo(receipient, subject, text, attachments){
         }
       });
       var mailOptions = {
-        from: 'mtsammy40@gmail.com',
-        to: receipient,
+        from: 'Bitpoll',
+        to: recipient,
         subject: subject,
         text: text,
         attachments: attachments
@@ -18,11 +19,11 @@ function mailTo(receipient, subject, text, attachments){
       transporter.sendMail(mailOptions, function(error, info){
         if (error) {
           console.log(error);
-          return 'There was an error. Please check data '+error;
+          return false;
         } else {
-          console.log('Email sent: ' + info.response);
-          return info.response;
+          console.log('Email sent:' + info.response);
+          return true;
         }
       });
 }
-module.exports.mailTo = mailTo;
+}
