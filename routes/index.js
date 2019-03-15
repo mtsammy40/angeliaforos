@@ -4,6 +4,8 @@ var nodemailer = require('nodemailer');
 var mail = require('../components/mailer');
 var Voter = require('../db/voterModel');
 var Admin = require('../db/pendingAdmin');
+var Election = require('../db/electionModel');
+var votes = require('../db/votes');
 var fs = require('fs');
 var path = require('path');
 var multer = require('multer');
@@ -66,6 +68,7 @@ router.post('/approveAdmin', (req, res)=>{
     }
   });
 });
+
 router.post('/sendIdentity', upload.single('data'), (req, res)=>{
   var tempPath = req.file.path;
   console.log('path file', tempPath);
@@ -133,6 +136,64 @@ router.post('/newAdmin', upload.single('dp'), function(req, res, next){
         .end("Only .png files are allowed!");
   });
 }
+});
+router.post('/newVote', (req, res, next)=>{
+  var newVote = new votes();
+  newVote.election = req.body.election;
+  newVote.candidate = req.body.candidate;
+  newVote.gender = req.body.gender;
+  newVote.age = req.body.age;
+  newVote.candNo = req.body.candidateNo;
+  newVote.save(err=>{
+    if(err){
+      throw err;
+    } else {
+      res.status(200).send('Successfully Saved');
+    }
+  })
+});
+router.post('/newElection', (req, res)=>{
+  var newElection = new Election();
+  newElection.class = req.body.$class;
+  newElection.electionId = req.body.electionId;
+  newElection.motion = req.body.motion;
+  newElection.start = req.body.start;
+  newElection.end = req.body.end;
+  newElection.candidates = req.body.candidates;
+  newElection.admin = req.body.admin;
+  newElection.save((err)=>{
+    if(err){
+      res.status(500).send(err);
+      throw err;
+    } else {
+      res.status(200).send('Successfully saved');
+    }
+  });
+});
+router.get('/allVotes', (req, res)=>{
+  votes.find((err, doc)=>{
+    if(err){
+      throw err;
+    } else {
+      res.status(200).send(doc);
+    }
+  })
+});
+router.get('/votes', (req, res, next)=>{
+  var election = req.param('election');
+  var electionData;
+  Election.find({electionId: election }, (err, docr)=>{
+    if (err){
+      throw err;
+    } else {
+      electionData = docr;
+    }
+  });
+  votes.find({ election : election }, (err, doc)=>{
+    if(err) throw err;
+    res.status(200).send(doc);
+    console.log(doc);
+  });
 });
 router.get('/sendMail', function(req, res, next) {
   var emailto = req.param('email');
