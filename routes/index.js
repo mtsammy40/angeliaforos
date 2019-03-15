@@ -9,8 +9,9 @@ var votes = require('../db/votes');
 var fs = require('fs');
 var path = require('path');
 var multer = require('multer');
-var upload = multer({ dest: 'uploads/' })
-
+var upload = multer({ dest: 'uploads/' });
+var queries = require('../components/queries');
+var charts = require('../components/charts');
 router.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -52,7 +53,7 @@ router.get('/pendingAdmin', (req, res, next)=>{
     if(err){
       res.status(500);
       throw err;
-    } 
+    }
     res.status('200').send(doc);
   });
 });
@@ -139,11 +140,17 @@ router.post('/newAdmin', upload.single('dp'), function(req, res, next){
 });
 router.post('/newVote', (req, res, next)=>{
   var newVote = new votes();
+  var candidateIds=[]; 
+  //Get only the Id of the candidates
+  for(var i = 0; i<req.body.candidates.length; i++){
+    var candidateId = req.body.candidates[i].split('#').pop();
+    candidateIds.push(candidateId);
+  }
   newVote.election = req.body.election;
   newVote.candidate = req.body.candidate;
   newVote.gender = req.body.gender;
   newVote.age = req.body.age;
-  newVote.candNo = req.body.candidateNo;
+  newVote.candidates = candidateIds;
   newVote.save(err=>{
     if(err){
       throw err;
@@ -179,22 +186,32 @@ router.get('/allVotes', (req, res)=>{
     }
   })
 });
-router.get('/votes', (req, res, next)=>{
+
+//Get statistics per election
+router.get('/votesForElection', (req, res, next)=>{
   var election = req.param('election');
-  var electionData;
-  Election.find({electionId: election }, (err, docr)=>{
-    if (err){
-      throw err;
-    } else {
-      electionData = docr;
-    }
-  });
   votes.find({ election : election }, (err, doc)=>{
     if(err) throw err;
-    res.status(200).send(doc);
-    console.log(doc);
+    console.log('Votes found', doc);
+    var candidates = doc[1].candidates;
+    var totalVotes = queries.getTotalVotes(doc, candidates);
+    console.log('total votes', totalVotes);
+    //render charts
+    var mChart = charts.Male(totalVotes);
+    var fChart = charts.Female(totalVotes);
+    console.log('total votes', totalVotes);
+    console.log('mChart', fChart);
+    var Results = {
+      mChart : mChart,
+      fChart : fChart,
+      results: totalVotes
+    }
+    res.status(200).contentType('json').send(Results);
   });
+  
 });
+
+//send email to recepient
 router.get('/sendMail', function(req, res, next) {
   var emailto = req.param('email');
   var transporter = nodemailer.createTransport({
@@ -204,14 +221,14 @@ router.get('/sendMail', function(req, res, next) {
       pass: 'aweSAM40'
     }
   });
-  
+
   var mailOptions = {
     from: 'mtsammy40@gmail.com',
     to: emailto,
     subject: 'Sending Email using Node.js',
     text: 'That was easy!'
   };
-  
+
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
       console.log(error);
