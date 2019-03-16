@@ -160,22 +160,30 @@ router.post('/newVote', (req, res, next)=>{
   })
 });
 router.post('/newElection', (req, res)=>{
+  var recepients = req.body.recepients;
+  var ballotKeys = req.body.ballotKeys;
+  var election = req.body.election;
   var newElection = new Election();
-  newElection.class = req.body.$class;
-  newElection.electionId = req.body.electionId;
-  newElection.motion = req.body.motion;
-  newElection.start = req.body.start;
-  newElection.end = req.body.end;
-  newElection.candidates = req.body.candidates;
-  newElection.admin = req.body.admin;
+  newElection.faction = "org.bitpoll.net.Election";
+  newElection.electionId = election.electionId;
+  newElection.motion = election.motion;
+  newElection.start = election.start;
+  newElection.end = election.end;
+  newElection.candidates = election.candidates;
+  newElection.admin = election.admin;
   newElection.save((err)=>{
     if(err){
       res.status(500).send(err);
       throw err;
     } else {
       res.status(200).send('Successfully saved');
+      mailingList = [];
+      for(var i=0; i<recepients.length; i++){
+        mail.mailTo(recepients[i], "New Election has been Scheduled!", "Your key is "+ballotKeys[i]);
+      }
     }
   });
+
 });
 router.get('/allVotes', (req, res)=>{
   votes.find((err, doc)=>{

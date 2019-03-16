@@ -1,7 +1,7 @@
 var nodemailer = require('nodemailer');
 
 module.exports = {
-  mailTo : function (recipient, subject, text, attachments){
+  mailTo : function (recipient, subject, text, attachments, html){
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -14,6 +14,7 @@ module.exports = {
         to: recipient,
         subject: subject,
         text: text,
+        html: html,
         attachments: attachments
       };
       transporter.sendMail(mailOptions, function(error, info){
