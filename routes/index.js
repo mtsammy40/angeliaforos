@@ -202,19 +202,25 @@ router.get('/votesForElection', (req, res, next)=>{
     if(err) throw err;
     console.log('Votes found', doc);
     var candidates = doc[1].candidates;
-    var totalVotes = queries.getTotalVotes(doc, candidates);
-    console.log('total votes', totalVotes);
-    //render charts
-    var mChart = charts.Male(totalVotes);
-    var fChart = charts.Female(totalVotes);
-    console.log('total votes', totalVotes);
-    console.log('mChart', fChart);
-    var Results = {
-      mChart : mChart,
-      fChart : fChart,
-      results: totalVotes
+    if(doc.length > 0){
+      var totalVotes = queries.getTotalVotes(doc, candidates);
+      console.log('total votes', totalVotes);
+      //render charts
+      var mChart = charts.Male(totalVotes);
+      var fChart = charts.Female(totalVotes);
+      var fullChart = charts.Full(totalVotes);
+      console.log('total votes', totalVotes);
+      console.log('mChart', fChart);
+      var Results = {
+        mChart : mChart,
+        fChart : fChart,
+        fullChart: fullChart, 
+        results: totalVotes
+      }
+      res.status(200).contentType('json').send(Results);
+    } else {
+      res.status(304).send("Data not found");
     }
-    res.status(200).contentType('json').send(Results);
   });
   
 });

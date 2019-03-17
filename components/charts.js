@@ -1,4 +1,22 @@
 module.exports ={
+    Full : function(election){
+      var ids=[], data=[], backgroundColors=[];
+      for(var i = 0; i<election.results.length; i++){
+        ids.push(election.results[i].candidate);
+        data.push(election.results[i].count);
+        var dynamicColors = "rgb(" +Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255)+ "," + Math.floor(Math.random() * 255) + ")";
+        backgroundColors.push(dynamicColors);
+      }
+      var Cdata ={
+        "labels": ids,
+        "datasets": [{
+            "label": "General Results",
+            "data" : data,
+            "backgroundColor": backgroundColors
+        }]                
+      };
+      return Cdata;
+    },
     Male : function(election){
           var ids=[], data=[], backgroundColors=[];
           for(var i = 0; i<election.results.length; i++){
