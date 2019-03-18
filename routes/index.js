@@ -201,8 +201,8 @@ router.get('/votesForElection', (req, res, next)=>{
   votes.find({ election : election }, (err, doc)=>{
     if(err) throw err;
     console.log('Votes found', doc);
-    var candidates = doc[1].candidates;
     if(doc.length > 0){
+      var candidates = doc[1].candidates;
       var totalVotes = queries.getTotalVotes(doc, candidates);
       console.log('total votes', totalVotes);
       //render charts
