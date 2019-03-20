@@ -84,13 +84,65 @@ router.post('/sendIdentity', upload.single('data'), (req, res)=>{
       path: tempPath
     },
   ];
-  var mailed = mail.mailTo(dest, subject, text, attachments);
-  if (mailed){
-    res.status(200).send('mail sent to ' + email);
+  var mailed = mail.mailTo(dest, subject, text, attachments, res);
+  if(mailed){
+    res.status(200).send('mail sent to ' + dest);
   } else {
     res.status(500).send('Failed to send email to : ' + dest);
   }
+  setTimeout(()=>{console.log('mail message after 2s',mail)}, 2000);
 });
+
+
+router.post('/sendVoterEmail', upload.single('data'), (req, res)=>{
+  var tempPath = req.file.path;
+  console.log('path file', tempPath);
+  var name = req.body.id;
+  var dest = req.body.email;
+  console.log('dest', req.body.email);
+  var subject = "You have been Registered as a voter!";
+  var text = "Find attached your identity. Download it and upload it when promted! Keep it secret!!!";
+  var attachments= [
+    {   // utf-8 string as an attachment
+      filename: name+'.card',
+      path: tempPath
+    },
+  ];
+  var mailed = mail.mailTo(dest, subject, text, attachments, res);
+  if(mailed){
+    res.status(200).send('mail sent to ' + dest);
+  } else {
+    res.status(500).send('Failed to send email to : ' + dest);
+  }
+  setTimeout(()=>{console.log('mail message after 2s',mail)}, 2000);
+});
+
+
+router.post('/sendRegEmail', upload.single('data'), (req, res)=>{
+  var tempPath = req.file.path;
+  console.log('path file', tempPath);
+  var name = req.body.id;
+  var dest = req.body.email;
+  console.log('dest', req.body.email);
+  var subject = "You have been Registered as a Regulator!";
+  var text = "Find attached your identity. Download it and upload it when promted! Keep it secret!!!";
+  var attachments= [
+    {   // utf-8 string as an attachment
+      filename: name+'.card',
+      path: tempPath
+    },
+  ];
+  var mailed = mail.mailTo(dest, subject, text, attachments, res);
+  if(mailed){
+    res.status(200).send('mail sent to ' + dest);
+  } else {
+    res.status(500).send('Failed to send email to : ' + dest);
+  }
+  setTimeout(()=>{console.log('mail message after 2s',mail)}, 2000);
+});
+
+
+
 router.get('/AllPendingAdmins/', (req, res)=>{
   Admin.find({ approved: false }, (err, doc)=>{
     if(err) throw err;
