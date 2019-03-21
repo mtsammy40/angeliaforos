@@ -145,8 +145,14 @@ router.post('/sendRegEmail', upload.single('data'), (req, res)=>{
 
 router.get('/AllPendingAdmins/', (req, res)=>{
   Admin.find({ approved: false }, (err, doc)=>{
-    if(err) throw err;
-    res.status(200).send(doc);
+    if(err) {throw err;}
+    if(doc.length ===0){
+     res.status(304).send('No records found'); 
+    } else {
+      console.log('doc',doc);
+      res.status(200).send(doc);
+    }
+   
   });
 });
 
