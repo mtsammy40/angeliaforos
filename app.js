@@ -13,7 +13,7 @@ var app = express();
 
 
 //mongoose.connect('mongodb://localhost:27017/bitpoll', {useNewUrlParser: true});
-mongoose.connect('mongodb://bitpoll:awesam40@bitpoll-shard-00-00-bjein.azure.mongodb.net:27017,bitpoll-shard-00-01-bjein.azure.mongodb.net:27017,bitpoll-shard-00-02-bjein.azure.mongodb.net:27017/test?ssl=true&replicaSet=Bitpoll-shard-0&authSource=admin&retryWrites=true', {useNewUrlParser: true});
+mongoose.connect('mongodb://angel:aweSAM40!@bitpoll-shard-00-00-bjein.azure.mongodb.net:27017,bitpoll-shard-00-01-bjein.azure.mongodb.net:27017,bitpoll-shard-00-02-bjein.azure.mongodb.net:27017/test?ssl=true&replicaSet=Bitpoll-shard-0&authSource=admin&retryWrites=true', {useNewUrlParser: true});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
