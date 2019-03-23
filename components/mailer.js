@@ -1,7 +1,7 @@
 var nodemailer = require('nodemailer');
 
 module.exports = {
-  mailTo : async function (recipient, subject, text, attachments, html, res){
+  mailTo: function (recipient, subject, text, attachments, html) {
     var transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -18,17 +18,17 @@ module.exports = {
       attachments: attachments
     };
     var result;
-    transporter.sendMail(mailOptions, function(error, info){
+    transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log(error);
-        
         result = false;
+        return false;
       } else {
         console.log('Email sent:' + info.response);
-        
         result = true;
+        return true;
       }
     });
     return result;
-}
+  }
 }
