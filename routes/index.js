@@ -214,6 +214,7 @@ router.post('/newElection', (req, res) => {
   newElection.end = election.end;
   newElection.candidates = election.candidates;
   newElection.admin = election.admin;
+  var message = "A new election with the motion, "+newElection.motion+", has been scheduled to start on, "+newElection.start.split('T')[0]+".\n Your Secret Key is: ";
   newElection.save((err) => {
     if (err) {
       res.status(500).send(err);
@@ -222,11 +223,10 @@ router.post('/newElection', (req, res) => {
       res.status(200).send('Successfully saved');
       mailingList = [];
       for (var i = 0; i < recepients.length; i++) {
-        mail.mailTo(recepients[i], "New Election has been Scheduled!", "Your key is " + ballotKeys[i]);
+        mail.mailTo(recepients[i], "New Election has been Scheduled!", message, + ballotKeys[i]);
       }
     }
   });
-
 });
 router.get('/allVotes', (req, res) => {
   votes.find((err, doc) => {
@@ -245,8 +245,8 @@ router.get('/votesForElection', (req, res, next) => {
     if (err) throw err;
     console.log('Votes found', doc);
     if (doc.length > 0) {
-      var candidates = doc[1].candidates;
-      var totalVotes = queries.getTotalVotes(doc, candidates);
+      var candidatess = doc[0].candidates;
+      var totalVotes = queries.getTotalVotes(doc, candidatess);
       console.log('total votes', totalVotes);
       //render charts
       var mChart = charts.Male(totalVotes);

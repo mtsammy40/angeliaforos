@@ -18,7 +18,7 @@ module.exports = {
       results.push(cand);
     }
     var fresults = {
-      electionId : election[1].election,
+      electionId : election[0].election,
       results: results
     }
     return fresults;
