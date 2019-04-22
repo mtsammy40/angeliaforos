@@ -1,16 +1,17 @@
 var nodemailer = require('nodemailer');
+var mailgunTransport = require('nodemailer-mailgun-transport');
 
 module.exports = {
   mailTo: function (recipient, subject, text, attachments, html) {
     var transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: 'mailgun',
       auth: {
         user: 'mtsammy40@gmail.com',
         pass: 'aweSAM40'
       }
     });
     var mailOptions = {
-      from: 'Bitpoll',
+      from: 'Bitpoll<mtsammy40@gmail.com>',
       to: recipient,
       subject: subject,
       text: text,
@@ -30,5 +31,22 @@ module.exports = {
       }
     });
     return result;
+  },
+
+  MGmailTo: function (recipient, subject, text, attachments, html) {
+    const mailgunOptions = {
+      auth:{
+        api_key: '174e4bd069bdc8196e145974d98cf4f2-e51d0a44-6a50780c',
+        domain: 'sandbox321d91e5ea8340069fe8542243a5d907.mailgun.org'
+      }
+    }
+    const transport = mailgunTransport(mailgunOptions);
+    class EmailService {
+      constructor(){
+        this.emailClient = nodemailer.createTransport(transport)
+      }
+      sendma()
+    }
   }
+
 }

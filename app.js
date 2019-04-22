@@ -12,8 +12,8 @@ var usersRouter = require('./routes/users');
 var app = express();
 
 
-//mongoose.connect('mongodb://localhost:27017/bitpoll', {useNewUrlParser: true});
-mongoose.connect('mongodb+srv://angel:aweSAM40!@bitpoll-bjein.azure.mongodb.net/test?retryWrites=true', {useNewUrlParser: true});
+mongoose.connect('mongodb://localhost:27017/bitpoll', {useNewUrlParser: true});
+//mongoose.connect('mongodb+srv://angel:aweSAM40!@bitpoll-bjein.azure.mongodb.net/test?retryWrites=true', {useNewUrlParser: true});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
